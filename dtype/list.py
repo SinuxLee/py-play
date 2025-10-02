@@ -3,8 +3,10 @@
 # LRU Cache（结合 Hash + 双向链表）
 
 
+# namedtuple
+
 from dataclasses import dataclass, field
-from typing import TypeVar, Union, Generic, List
+from typing import TypeVar, Union, Generic
 
 T = TypeVar("T", bound=Union[int, float])
 

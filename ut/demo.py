@@ -26,9 +26,9 @@ def read_csv(file_path: str):
 
 
 def print_table_9x9():
-    for i in range(1, 10):
+    for i in range(1, 20):
         for j in range(1, i + 1):
-            print(f"{j}*{i}={i*j}\t", end="")
+            print(f"{j}*{i}={i*j}", end=" ")
         print()
 
 
@@ -53,14 +53,14 @@ def select_sort(arr: list[int]) -> None:
         arr[idx], arr[length - 1] = arr[length - 1], arr[idx]
         length -= 1
         print(arr)
-    
+
+def foo(*args, **kwargs):
+    print(args)
+    print(kwargs)
+
 
 def main():
-    arr = [random.randint(1, 100) for _ in range(10)]
-    arr = [1, 64, 1, 41, 96, 35, 56, 100, 97, 23]
-    print("Original array:", arr)
-    select_sort(arr)
-    print("Sorted array:", arr)
+    foo(3, 2.1, True, name='libz', age=43, gpa=4.95)
 
 
 if __name__ == "__main__":

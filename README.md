@@ -38,3 +38,9 @@
 
 ## 教程
 - https://www.bilibili.com/video/BV1SecRewEhd?spm_id_from=333.788.videopod.episodes&vd_source=c0bff2f48f2b7c883ffe45d2f4c8a7a9&p=3
+- https://www.hello-algo.com/chapter_hello_algo/
+- https://pycoders-weekly-chinese.readthedocs.io/en/latest/issue6/a-guide-to-pythons-magic-methods.html
+
+## 调试工具
+
+- 可视化内存和栈帧 https://pythontutor.com/
