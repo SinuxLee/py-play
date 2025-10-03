@@ -36,6 +36,13 @@ class LinkedList(Generic[T]):
         node.prev.next = node.next
         node.next.prev = node.prev
 
+    def sort(self):
+        curr = self.head
+        while curr != self.tail and curr.next != self.tail:
+            if curr.val > curr.next.val:
+                curr.val, curr.next.val = curr.next.val, curr.val
+            curr = curr.next
+
     def display(self) -> None:
         curr = self.head.next
         while curr != self.tail:
@@ -46,8 +53,10 @@ class LinkedList(Generic[T]):
 
 ll: LinkedList[int] = LinkedList()
 ll.add_to_head(1)
-ll.add_to_head(2)
 ll.add_to_head(3)
+ll.add_to_head(2)
+ll.sort()
+
 ll.display()
 ll.remove(ll.head.next)  # 删除第一个节点
 ll.display()

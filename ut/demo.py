@@ -54,13 +54,36 @@ def select_sort(arr: list[int]) -> None:
         length -= 1
         print(arr)
 
+
 def foo(*args, **kwargs):
     print(args)
     print(kwargs)
 
 
+def strStr(haystack: str, needle: str) -> int:
+    need_len = len(needle)
+    need_idx = 0
+
+    hay_len = len(haystack)
+    hay_idx = 0
+
+    while hay_len - hay_idx > need_len - need_idx:
+        if haystack[hay_idx+need_idx] != needle[need_idx]:
+            hay_idx += 1
+            need_idx = 0
+            continue
+        
+        need_idx += 1
+        if need_idx >= need_len:
+            return hay_idx
+
+    return -1
+
+
 def main():
-    foo(3, 2.1, True, name='libz', age=43, gpa=4.95)
+    # foo(3, 2.1, True, name='libz', age=43, gpa=4.95)
+    print(strStr("sadbutsad", "sad"))
+    print(strStr("mississippi", "issip"))
 
 
 if __name__ == "__main__":
