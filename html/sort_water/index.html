@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Sort Puzzle Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .header-controls input {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            width: 80px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #667eea;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #059669;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+            min-height: 600px;
+        }
+
+        .level-list {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        .level-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .level-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .level-item.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .level-item.completed {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+
+        .level-item.completed.active {
+            background: #10b981;
+            color: white;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .bottles-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 12px;
+            min-height: 400px;
+        }
+
+        .bottle {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 3px;
+            padding: 10px 5px;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            position: relative;
+        }
+
+        .bottle:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .bottle.selected {
+            border-color: #667eea;
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .bottle-layer {
+            width: 100%;
+            height: 30px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .bottle-label {
+            position: absolute;
+            top: -25px;
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        .stats-panel {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .color-red { background: #ef4444; }
+        .color-blue { background: #3b82f6; }
+        .color-green { background: #10b981; }
+        .color-orange { background: #f97316; }
+        .color-purple { background: #a855f7; }
+        .color-cyan { background: #06b6d4; }
+        .color-yellow { background: #eab308; }
+        .color-gray { background: #6b7280; }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Water Sort Puzzle</h1>
+            <div class="header-controls">
+                <input type="number" id="levelCount" value="10" min="1" max="50" placeholder="关卡数">
+                <button class="btn btn-primary" onclick="game.generateLevels()">生成关卡</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="level-list" id="levelList">
+                <div class="loading">暂无关卡，点击生成关卡开始游戏</div>
+            </div>
+
+            <div class="game-area">
+                <div class="game-controls">
+                    <button class="btn btn-success" onclick="game.autoSolve()" id="btnAutoSolve">自动完成</button>
+                    <button class="btn btn-warning" onclick="game.stepSolve()" id="btnStepSolve">单步执行</button>
+                    <button class="btn btn-danger" onclick="game.resetLevel()" id="btnReset">重置关卡</button>
+                </div>
+                <div id="statusMessage"></div>
+                <div class="bottles-container" id="bottlesContainer">
+                    <div class="loading">请选择一个关卡开始游戏</div>
+                </div>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <div class="stat-label">当前关卡</div>
+                    <div class="stat-value" id="currentLevel">-</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">瓶子总数</div>
+                    <div class="stat-value" id="totalBottles">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">颜色总数</div>
+                    <div class="stat-value" id="totalColors">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">已完成瓶子</div>
+                    <div class="stat-value" id="completedBottles">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">操作次数</div>
+                    <div class="stat-value" id="moveCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">最优步数</div>
+                    <div class="stat-value" id="optimalMoves">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Color definitions
+        const COLOR = {
+            RED: 1,
+            BLUE: 2,
+            GREEN: 3,
+            ORANGE: 4,
+            PURPLE: 5,
+            CYAN: 6,
+            YELLOW: 7,
+            GRAY: 8,
+            MAX: 9
+        };
+
+        const COLOR_CLASSES = {
+            1: 'color-red',
+            2: 'color-blue',
+            3: 'color-green',
+            4: 'color-orange',
+            5: 'color-purple',
+            6: 'color-cyan',
+            7: 'color-yellow',
+            8: 'color-gray'
+        };
+
+        const CAPACITY = 4;
+        const BOTTLE_AMOUNT = 19;
+        const EMPTY_BOTTLE = 2;
+
+        // MinHeap implementation
+        class MinHeap {
+            constructor() {
+                this.heap = [];
+            }
+
+            push(item) {
+                this.heap.push(item);
+                this.bubbleUp(this.heap.length - 1);
+            }
+
+            pop() {
+                if (this.heap.length === 0) return undefined;
+                if (this.heap.length === 1) return this.heap.pop();
+
+                const min = this.heap[0];
+                this.heap[0] = this.heap.pop();
+                this.bubbleDown(0);
+                return min;
+            }
+
+            size() {
+                return this.heap.length;
+            }
+
+            bubbleUp(index) {
+                while (index > 0) {
+                    const parentIndex = Math.floor((index - 1) / 2);
+                    if (this.heap[index].f >= this.heap[parentIndex].f) break;
+                    [this.heap[index], this.heap[parentIndex]] = [this.heap[parentIndex], this.heap[index]];
+                    index = parentIndex;
+                }
+            }
+
+            bubbleDown(index) {
+                while (true) {
+                    const leftChild = 2 * index + 1;
+                    const rightChild = 2 * index + 2;
+                    let smallest = index;
+
+                    if (leftChild < this.heap.length && this.heap[leftChild].f < this.heap[smallest].f) {
+                        smallest = leftChild;
+                    }
+                    if (rightChild < this.heap.length && this.heap[rightChild].f < this.heap[smallest].f) {
+                        smallest = rightChild;
+                    }
+                    if (smallest === index) break;
+
+                    [this.heap[index], this.heap[smallest]] = [this.heap[smallest], this.heap[index]];
+                    index = smallest;
+                }
+            }
+        }
+
+        // WaterSortSolver class
+        class WaterSortSolver {
+            constructor(maxCapacity = CAPACITY) {
+                this.maxCapacity = maxCapacity;
+                this.initialState = [];
+                this.colorCount = new Map();
+            }
+
+            countColors() {
+                const colorCount = new Map();
+                for (const bottle of this.initialState) {
+                    for (const color of bottle) {
+                        colorCount.set(color, (colorCount.get(color) || 0) + 1);
+                    }
+                }
+                return colorCount;
+            }
+
+            changePuzzle(bottles) {
+                this.initialState = bottles.map(b => [...b]);
+                this.colorCount = this.countColors();
+            }
+
+            genNewPuzzle() {
+                const colorBlocks = [];
+                for (let i = 0; i < BOTTLE_AMOUNT - EMPTY_BOTTLE; i++) {
+                    const color = Math.floor(Math.random() * (COLOR.MAX - COLOR.RED)) + COLOR.RED;
+                    for (let j = 0; j < CAPACITY; j++) {
+                        colorBlocks.push(color);
+                    }
+                }
+
+                for (let i = colorBlocks.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [colorBlocks[i], colorBlocks[j]] = [colorBlocks[j], colorBlocks[i]];
+                }
+
+                const bottles = Array.from({ length: BOTTLE_AMOUNT }, () => []);
+                let blockIndex = 0;
+                for (let idx = 0; idx < bottles.length; idx++) {
+                    const count = idx < 2 ? CAPACITY / 2 : CAPACITY;
+                    bottles[idx] = colorBlocks.slice(blockIndex, blockIndex + count);
+                    blockIndex += count;
+                }
+
+                return bottles;
+            }
+
+            getTopColorCount(bottle) {
+                if (bottle.length === 0) return [null, 0];
+
+                const color = bottle[bottle.length - 1];
+                let count = 0;
+                for (let i = bottle.length - 1; i >= 0; i--) {
+                    if (bottle[i] === color) {
+                        count++;
+                    } else {
+                        break;
+                    }
+                }
+                return [color, count];
+            }
+
+            isBottleComplete(bottle) {
+                return bottle.length === this.maxCapacity && new Set(bottle).size === 1;
+            }
+
+            isBottleSingleColor(bottle) {
+                return bottle.length > 0 && new Set(bottle).size === 1;
+            }
+
+            countCompleteBottles(bottles) {
+                return bottles.filter(b => this.isBottleComplete(b)).length;
+            }
+
+            isValidPour(fromBottle, toBottle) {
+                if (fromBottle.length === 0 || toBottle.length >= this.maxCapacity) {
+                    return false;
+                }
+
+                if (toBottle.length === 0) {
+                    return true;
+                }
+
+                return fromBottle[fromBottle.length - 1] === toBottle[toBottle.length - 1];
+            }
+
+            isUsefulMove(state, fromIdx, toIdx) {
+                const fromBottle = state[fromIdx];
+                const toBottle = state[toIdx];
+
+                if (this.isBottleComplete(fromBottle)) return false;
+                if (this.isBottleComplete(toBottle)) return false;
+
+                if (toBottle.length === 0 && this.isBottleSingleColor(fromBottle)) {
+                    if (fromBottle.length === this.maxCapacity) return false;
+                }
+
+                if (this.isBottleSingleColor(fromBottle) && this.isBottleSingleColor(toBottle)) {
+                    if (fromBottle[fromBottle.length - 1] === toBottle[toBottle.length - 1]) {
+                        const [, fromCount] = this.getTopColorCount(fromBottle);
+                        const total = toBottle.length + fromCount;
+                        if (total < this.maxCapacity) return false;
+                    }
+                }
+
+                if (toBottle.length >= 2) {
+                    const bottomColor = toBottle[0];
+                    const isBottomSorted = toBottle.every(c => c === bottomColor);
+                    if (isBottomSorted && fromBottle[fromBottle.length - 1] !== bottomColor) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            pourWater(bottles, fromIdx, toIdx) {
+                const newBottles = bottles.map(b => [...b]);
+                const fromBottle = newBottles[fromIdx];
+                const toBottle = newBottles[toIdx];
+
+                const color = fromBottle[fromBottle.length - 1];
+                let count = 0;
+
+                while (
+                    fromBottle.length > 0 &&
+                    fromBottle[fromBottle.length - 1] === color &&
+                    toBottle.length < this.maxCapacity
+                ) {
+                    toBottle.push(fromBottle.pop());
+                    count++;
+                }
+
+                return [newBottles, count];
+            }
+
+            isSolved(bottles) {
+                for (const bottle of bottles) {
+                    if (bottle.length === 0) continue;
+                    if (bottle.length !== this.maxCapacity || new Set(bottle).size !== 1) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            stateToString(bottles) {
+                return JSON.stringify(bottles);
+            }
+
+            getHeuristic(bottles) {
+                let h = 0;
+
+                const colorBottles = new Map();
+                for (let i = 0; i < bottles.length; i++) {
+                    const uniqueColors = new Set(bottles[i]);
+                    for (const color of uniqueColors) {
+                        if (!colorBottles.has(color)) {
+                            colorBottles.set(color, []);
+                        }
+                        colorBottles.get(color).push(i);
+                    }
+                }
+
+                for (const [color, bottleIndices] of colorBottles) {
+                    h += (bottleIndices.length - 1) * 2;
+
+                    for (const idx of bottleIndices) {
+                        const bottle = bottles[idx];
+                        if (this.isBottleComplete(bottle)) continue;
+
+                        const [topColor] = this.getTopColorCount(bottle);
+                        if (topColor !== color) {
+                            let layersAbove = 0;
+                            for (let i = bottle.length - 1; i >= 0; i--) {
+                                if (bottle[i] === color) break;
+                                layersAbove++;
+                            }
+                            h += layersAbove;
+                        }
+                    }
+                }
+
+                const incomplete = bottles.filter(b => b.length > 0 && !this.isBottleComplete(b)).length;
+                h += incomplete * 0.5;
+
+                return h;
+            }
+
+            getPriorityMoves(state) {
+                const moves = [];
+
+                for (let i = 0; i < state.length; i++) {
+                    if (state[i].length === 0 || this.isBottleComplete(state[i])) continue;
+
+                    const [fromColor, fromCount] = this.getTopColorCount(state[i]);
+
+                    for (let j = 0; j < state.length; j++) {
+                        if (i === j) continue;
+                        if (!this.isValidPour(state[i], state[j])) continue;
+                        if (!this.isUsefulMove(state, i, j)) continue;
+
+                        let priority = 0;
+                        const [toColor, toCount] = this.getTopColorCount(state[j]);
+                        const canPour = Math.min(fromCount, this.maxCapacity - state[j].length);
+
+                        if (toColor === fromColor) {
+                            const total = state[j].length + canPour;
+                            if (total === this.maxCapacity) {
+                                priority += 1000;
+                            } else if (total > this.maxCapacity * 0.75) {
+                                priority += 500;
+                            }
+                        }
+
+                        if (state[i].length === fromCount) {
+                            priority += 300;
+                        }
+
+                        if (state[j].length > 0 && toColor === fromColor) {
+                            priority += 200;
+                        }
+
+                        if (state[j].length === 0) {
+                            if (this.isBottleSingleColor(state[i]) && state[i].length === this.maxCapacity) {
+                                priority += 10;
+                            } else {
+                                priority += 150;
+                            }
+                        }
+
+                        priority += canPour * 10;
+
+                        if (this.isBottleSingleColor(state[i])) {
+                            priority += 100;
+                        }
+
+                        moves.push([priority, i, j]);
+                    }
+                }
+
+                moves.sort((a, b) => b[0] - a[0]);
+                return moves.slice(0, 15).map(([, i, j]) => [i, j]);
+            }
+
+            solve(maxSteps = 500000, timeLimit = 300) {
+                const startTime = Date.now();
+
+                const initialH = this.getHeuristic(this.initialState);
+                const heap = new MinHeap();
+                heap.push({ f: initialH, cost: 0, state: this.initialState, path: [] });
+                
+                const visited = new Set();
+                visited.add(this.stateToString(this.initialState));
+
+                let steps = 0;
+
+                while (heap.size() > 0) {
+                    steps++;
+
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    if (elapsed > timeLimit) return null;
+                    if (steps > maxSteps) return null;
+
+                    const item = heap.pop();
+                    const { cost, state: currentState, path } = item;
+
+                    if (this.isSolved(currentState)) {
+                        return path;
+                    }
+
+                    const priorityMoves = this.getPriorityMoves(currentState);
+
+                    for (const [i, j] of priorityMoves) {
+                        const [newState, count] = this.pourWater(currentState, i, j);
+                        const stateStr = this.stateToString(newState);
+
+                        if (!visited.has(stateStr)) {
+                            visited.add(stateStr);
+                            const newCost = cost + 1;
+                            const h = this.getHeuristic(newState);
+                            const f = newCost + h;
+                            const newPath = [...path, [i, j, count]];
+                            heap.push({ f, cost: newCost, state: newState, path: newPath });
+                        }
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        // Game Manager
+        class GameManager {
+            constructor() {
+                this.levels = [];
+                this.currentLevelIndex = -1;
+                this.currentState = [];
+                this.solution = [];
+                this.moveCount = 0;
+                this.selectedBottle = null;
+                this.autoPlaying = false;
+                this.stepIndex = 0;
+                this.init();
+            }
+
+            init() {
+                this.loadLevels();
+                this.renderLevelList();
+                this.updateStats();
+            }
+
+            saveLevels() {
+                const data = {
+                    levels: this.levels,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('waterSortLevels', JSON.stringify(data));
+            }
+
+            loadLevels() {
+                const data = localStorage.getItem('waterSortLevels');
+                if (data) {
+                    try {
+                        const parsed = JSON.parse(data);
+                        this.levels = parsed.levels || [];
+                    } catch (e) {
+                        console.error('Failed to load levels:', e);
+                        this.levels = [];
+                    }
+                }
+            }
+
+            async generateLevels() {
+                const count = parseInt(document.getElementById('levelCount').value) || 10;
+                this.showStatus('正在生成关卡...', 'info');
+                
+                const solver = new WaterSortSolver();
+                const newLevels = [];
+
+                for (let i = 0; i < count; i++) {
+                    let attempts = 0;
+                    while (attempts < 10) {
+                        const puzzle = solver.genNewPuzzle();
+                        solver.changePuzzle(puzzle);
+                        const solution = solver.solve(10000, 3);
+                        
+                        if (solution) {
+                            newLevels.push({
+                                id: Date.now() + i,
+                                puzzle: puzzle,
+                                solution: solution,
+                                completed: false
+                            });
+                            this.showStatus(`已生成 ${newLevels.length}/${count} 个关卡`, 'info');
+                            await new Promise(resolve => setTimeout(resolve, 10));
+                            break;
+                        }
+                        attempts++;
+                    }
+                }
+
+                this.levels = newLevels;
+                this.saveLevels();
+                this.renderLevelList();
+                this.showStatus(`成功生成 ${newLevels.length} 个关卡！`, 'success');
+            }
+
+            renderLevelList() {
+                const container = document.getElementById('levelList');
+                if (this.levels.length === 0) {
+                    container.innerHTML = '<div class="loading">暂无关卡，点击生成关卡开始游戏</div>';
+                    return;
+                }
+
+                container.innerHTML = this.levels.map((level, index) => `
+                    <div class="level-item ${index === this.currentLevelIndex ? 'active' : ''} ${level.completed ? 'completed' : ''}"
+                         onclick="game.loadLevel(${index})">
+                        <span>关卡 ${index + 1}</span>
+                        <span>${level.completed ? '✓' : ''}</span>
+                    </div>
+                `).join('');
+            }
+
+            loadLevel(index) {
+                if (index < 0 || index >= this.levels.length) return;
+
+                this.currentLevelIndex = index;
+                this.currentState = JSON.parse(JSON.stringify(this.levels[index].puzzle));
+                this.solution = this.levels[index].solution;
+                this.moveCount = 0;
+                this.selectedBottle = null;
+                this.autoPlaying = false;
+                this.stepIndex = 0;
+
+                this.renderLevelList();
+                this.renderBottles();
+                this.updateStats();
+                this.showStatus('', '');
+            }
+
+            renderBottles() {
+                const container = document.getElementById('bottlesContainer');
+                
+                if (this.currentLevelIndex === -1 || this.currentState.length === 0) {
+                    container.innerHTML = '<div class="loading">请选择一个关卡开始游戏</div>';
+                    return;
+                }
+
+                const solver = new WaterSortSolver();
+                solver.changePuzzle(this.currentState);
+                
+                const html = this.currentState.map((bottle, index) => {
+                    const layers = [];
+                    
+                    for (let i = 0; i < bottle.length; i++) {
+                        const colorClass = COLOR_CLASSES[bottle[i]] || '';
+                        layers.push(`<div class="bottle-layer ${colorClass}"></div>`);
+                    }
+                    
+                    for (let i = bottle.length; i < CAPACITY; i++) {
+                        layers.push(`<div class="bottle-layer" style="background: transparent; border: 1px dashed #e5e7eb;"></div>`);
+                    }
+                    
+                    const isComplete = solver.isBottleComplete(bottle);
+                    const isSelected = this.selectedBottle === index;
+                    
+                    return `
+                        <div class="bottle ${isSelected ? 'selected' : ''}" onclick="game.selectBottle(${index})">
+                            <div class="bottle-label">#${index}</div>
+                            ${layers.join('')}
+                            ${isComplete ? '<div style="margin-top: 5px; font-size: 20px;">✓</div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = html;
+            }
+
+            selectBottle(index) {
+                if (this.autoPlaying) return;
+                if (this.currentLevelIndex === -1) return;
+
+                const solver = new WaterSortSolver();
+                solver.changePuzzle(this.currentState);
+                
+                if (this.selectedBottle === null) {
+                    if (this.currentState[index].length > 0 && !solver.isBottleComplete(this.currentState[index])) {
+                        this.selectedBottle = index;
+                        this.renderBottles();
+                    }
+                } else {
+                    if (this.selectedBottle === index) {
+                        this.selectedBottle = null;
+                        this.renderBottles();
+                    } else {
+                        const fromBottle = this.currentState[this.selectedBottle];
+                        const toBottle = this.currentState[index];
+                        
+                        if (solver.isValidPour(fromBottle, toBottle)) {
+                            const result = solver.pourWater(
+                                this.currentState,
+                                this.selectedBottle,
+                                index
+                            );
+                            this.currentState = result[0];
+                            this.moveCount++;
+                            this.selectedBottle = null;
+                            
+                            solver.changePuzzle(this.currentState);
+                            if (solver.isSolved(this.currentState)) {
+                                this.levels[this.currentLevelIndex].completed = true;
+                                this.saveLevels();
+                                this.showStatus('🎉 恭喜完成关卡！', 'success');
+                                this.renderLevelList();
+                            }
+                            
+                            this.renderBottles();
+                            this.updateStats();
+                        } else {
+                            if (this.currentState[index].length > 0 && !solver.isBottleComplete(this.currentState[index])) {
+                                this.selectedBottle = index;
+                                this.renderBottles();
+                            } else {
+                                this.showStatus('❌ 无法倒水到该瓶子', 'error');
+                                setTimeout(() => this.showStatus('', ''), 1500);
+                            }
+                        }
+                    }
+                }
+            }
+
+            async autoSolve() {
+                if (this.autoPlaying) return;
+                if (this.currentLevelIndex === -1) {
+                    this.showStatus('请先选择一个关卡', 'error');
+                    return;
+                }
+
+                this.autoPlaying = true;
+                this.showStatus('🤖 AI 自动完成中...', 'info');
+                
+                const solver = new WaterSortSolver();
+
+                for (let i = this.stepIndex; i < this.solution.length; i++) {
+                    if (!this.autoPlaying) break;
+
+                    const [fromIdx, toIdx, count] = this.solution[i];
+                    
+                    const result = solver.pourWater(this.currentState, fromIdx, toIdx);
+                    this.currentState = result[0];
+                    this.moveCount++;
+                    this.stepIndex = i + 1;
+                    
+                    this.renderBottles();
+                    this.updateStats();
+                    
+                    await new Promise(resolve => setTimeout(resolve, 600));
+                }
+
+                if (this.autoPlaying && this.stepIndex >= this.solution.length) {
+                    this.levels[this.currentLevelIndex].completed = true;
+                    this.saveLevels();
+                    this.showStatus('🎉 AI 自动完成！', 'success');
+                    this.renderLevelList();
+                }
+
+                this.autoPlaying = false;
+            }
+
+            stepSolve() {
+                if (this.autoPlaying) return;
+                if (this.currentLevelIndex === -1) {
+                    this.showStatus('请先选择一个关卡', 'error');
+                    return;
+                }
+                if (this.stepIndex >= this.solution.length) {
+                    this.showStatus('✅ 已完成所有步骤！', 'success');
+                    return;
+                }
+
+                const solver = new WaterSortSolver();
+                const [fromIdx, toIdx, count] = this.solution[this.stepIndex];
+                
+                const result = solver.pourWater(this.currentState, fromIdx, toIdx);
+                this.currentState = result[0];
+                this.moveCount++;
+                this.stepIndex++;
+                
+                this.renderBottles();
+                this.updateStats();
+                
+                if (this.stepIndex >= this.solution.length) {
+                    this.levels[this.currentLevelIndex].completed = true;
+                    this.saveLevels();
+                    this.showStatus('🎉 单步完成！', 'success');
+                    this.renderLevelList();
+                } else {
+                    this.showStatus(`步骤 ${this.stepIndex}/${this.solution.length} - 瓶子 ${fromIdx} → 瓶子 ${toIdx}`, 'info');
+                }
+            }
+
+            resetLevel() {
+                if (this.currentLevelIndex === -1) {
+                    this.showStatus('请先选择一个关卡', 'error');
+                    return;
+                }
+                
+                this.autoPlaying = false;
+                this.loadLevel(this.currentLevelIndex);
+                this.showStatus('♻️ 已重置关卡', 'info');
+            }
+
+            updateStats() {
+                const solver = new WaterSortSolver();
+                
+                document.getElementById('currentLevel').textContent = 
+                    this.currentLevelIndex >= 0 ? (this.currentLevelIndex + 1) : '-';
+                
+                document.getElementById('totalBottles').textContent = this.currentState.length || 0;
+                
+                const colors = new Set();
+                this.currentState.forEach(bottle => {
+                    bottle.forEach(color => colors.add(color));
+                });
+                document.getElementById('totalColors').textContent = colors.size || 0;
+                
+                if (this.currentState.length > 0) {
+                    solver.changePuzzle(this.currentState);
+                    const completed = solver.countCompleteBottles(this.currentState);
+                    document.getElementById('completedBottles').textContent = completed;
+                } else {
+                    document.getElementById('completedBottles').textContent = 0;
+                }
+                
+                document.getElementById('moveCount').textContent = this.moveCount;
+                
+                document.getElementById('optimalMoves').textContent = 
+                    this.solution.length > 0 ? this.solution.length : '-';
+            }
+
+            showStatus(message, type) {
+                const container = document.getElementById('statusMessage');
+                if (!message) {
+                    container.innerHTML = '';
+                    return;
+                }
+                
+                const className = type === 'success' ? 'status-success' : 
+                                type === 'error' ? 'status-error' : 'status-info';
+                container.innerHTML = `<div class="status-message ${className}">${message}</div>`;
+                
+                if (type === 'info' && !message.includes('步骤')) {
+                    setTimeout(() => {
+                        container.innerHTML = '';
+                    }, 2000);
+                }
+            }
+        }
+
+        // Initialize game
+        const game = new GameManager();
+    </script>
+</body>
+</html>
