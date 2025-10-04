@@ -15,29 +15,35 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            height: 100vh;
+            padding: 10px;
+            overflow: hidden;
         }
 
         .container {
             max-width: 1400px;
+            height: calc(100vh - 20px);
             margin: 0 auto;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px 30px;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 600;
         }
 
@@ -108,23 +114,25 @@
 
         .main-content {
             display: grid;
-            grid-template-columns: 250px 1fr 300px;
-            gap: 20px;
-            padding: 20px;
-            min-height: 600px;
+            grid-template-columns: 220px 1fr 280px;
+            gap: 15px;
+            padding: 15px;
+            flex: 1;
+            overflow: hidden;
         }
 
         .level-list {
             background: #f9fafb;
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             overflow-y: auto;
-            max-height: 600px;
+            display: flex;
+            flex-direction: column;
         }
 
         .level-item {
-            padding: 12px 15px;
-            margin-bottom: 8px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
             background: white;
             border-radius: 8px;
             cursor: pointer;
@@ -133,6 +141,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .level-item:hover {
@@ -158,7 +167,8 @@
         .game-area {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
+            overflow: hidden;
         }
 
         .game-controls {
@@ -169,26 +179,28 @@
 
         .bottles-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-            gap: 15px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+            gap: 12px;
+            padding: 15px 15px 30px;
             background: #f9fafb;
             border-radius: 12px;
-            min-height: 400px;
+            overflow-y: auto;
+            flex: 1;
         }
 
         .bottle {
             display: flex;
             flex-direction: column-reverse;
             align-items: center;
-            gap: 3px;
-            padding: 10px 5px;
+            gap: 2px;
+            padding: 25px 4px 8px;
             background: white;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
             border: 3px solid transparent;
             position: relative;
+            height: fit-content;
         }
 
         .bottle:hover {
@@ -204,33 +216,42 @@
 
         .bottle-layer {
             width: 100%;
-            height: 30px;
-            border-radius: 6px;
+            height: 25px;
+            border-radius: 5px;
             transition: all 0.3s;
         }
 
         .bottle-label {
             position: absolute;
-            top: -25px;
-            font-size: 12px;
+            top: 5px;
+            font-size: 11px;
             color: #6b7280;
             font-weight: 600;
+        }
+
+        .bottle-check {
+            position: absolute;
+            bottom: -22px;
+            font-size: 16px;
+            color: #10b981;
         }
 
         .stats-panel {
             background: #f9fafb;
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
+            overflow-y: auto;
         }
 
         .stat-item {
             background: white;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
             border-left: 4px solid #667eea;
+            flex-shrink: 0;
         }
 
         .stat-label {
@@ -240,7 +261,7 @@
         }
 
         .stat-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: #1f2937;
         }
@@ -258,14 +279,43 @@
             text-align: center;
             padding: 40px;
             color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
         }
 
         .status-message {
             text-align: center;
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 15px;
             font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .status-floating {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            padding: 20px 40px;
+            border-radius: 12px;
+            font-size: 18px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
         }
 
         .status-success {
@@ -305,7 +355,6 @@
                     <button class="btn btn-warning" onclick="game.stepSolve()" id="btnStepSolve">单步执行</button>
                     <button class="btn btn-danger" onclick="game.resetLevel()" id="btnReset">重置关卡</button>
                 </div>
-                <div id="statusMessage"></div>
                 <div class="bottles-container" id="bottlesContainer">
                     <div class="loading">请选择一个关卡开始游戏</div>
                 </div>
@@ -339,6 +388,8 @@
             </div>
         </div>
     </div>
+
+    <div id="statusMessage"></div>
 
     <script>
         // Color definitions
@@ -468,7 +519,7 @@
                     blockIndex += count;
                 }
 
-                return bottles;
+                return bottles.sort(() => Math.random() - 0.5);
             }
 
             getTopColorCount(bottle) {
@@ -733,6 +784,11 @@
             init() {
                 this.loadLevels();
                 this.renderLevelList();
+                if (this.levels.length === 0){
+                    this.generateLevels()
+                }
+                this.currentLevelIndex = 0
+                this.loadLevel(0)
                 this.updateStats();
             }
 
@@ -855,7 +911,7 @@
                         <div class="bottle ${isSelected ? 'selected' : ''}" onclick="game.selectBottle(${index})">
                             <div class="bottle-label">#${index}</div>
                             ${layers.join('')}
-                            ${isComplete ? '<div style="margin-top: 5px; font-size: 20px;">✓</div>' : ''}
+                            ${isComplete ? '<div class="bottle-check">✓</div>' : ''}
                         </div>
                     `;
                 }).join('');
@@ -1034,13 +1090,11 @@
                 
                 const className = type === 'success' ? 'status-success' : 
                                 type === 'error' ? 'status-error' : 'status-info';
-                container.innerHTML = `<div class="status-message ${className}">${message}</div>`;
-                
-                if (type === 'info' && !message.includes('步骤')) {
-                    setTimeout(() => {
-                        container.innerHTML = '';
-                    }, 2000);
-                }
+                container.innerHTML = `<div class="status-message status-floating ${className}">${message}</div>`;
+                // 自动消失
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 2000);
             }
         }
 
