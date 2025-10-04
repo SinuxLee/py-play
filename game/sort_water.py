@@ -20,8 +20,6 @@ class COLOR(Enum):
     GRAY = auto()
     MAX = auto()
 
-
-capacity = 4  # 每个瓶子的容量
 bottle_amount = 19  # 瓶子总数
 empty_bottle = 2  # 两个空瓶
 
@@ -56,12 +54,12 @@ class WaterSortSolver:
         color_blocks: list[int] = []
         for _ in range(bottle_amount-empty_bottle):
             color = random.randint(COLOR.RED.value, COLOR.MAX.value)
-            color_blocks.extend([color for _ in range(capacity)])
+            color_blocks.extend([color for _ in range(self.max_capacity)])
 
         random.shuffle(color_blocks)
         bottles: list[list[int]] = [[] for _ in range(bottle_amount)]
         for idx, b in enumerate(bottles):
-            count = capacity//2 if idx < 2 else capacity
+            count = self.max_capacity//2 if idx < 2 else self.max_capacity
             b.extend(color_blocks[:count])
             color_blocks = color_blocks[count:]
 
@@ -375,5 +373,5 @@ class WaterSortSolver:
             print(f"瓶子 {i:2d}: {bottle}{status}")
 
 
-solver = WaterSortSolver()
+solver = WaterSortSolver(8)
 solver.gen_some_valid_puzzle()
