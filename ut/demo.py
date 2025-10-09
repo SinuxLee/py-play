@@ -32,29 +32,6 @@ def print_table_9x9():
         print()
 
 
-# 比较相邻的两个数
-def bubble_sort(arr: list[int]) -> None:
-    length = len(arr)
-    while length > 1:
-        for i in range(length - 1):
-            if arr[i] > arr[i + 1]:
-                arr[i], arr[i + 1] = arr[i + 1], arr[i]
-        length -= 1
-
-
-# 其中一个较大的数与其它数比较
-def select_sort(arr: list[int]) -> None:
-    length = len(arr)
-    while length > 1:
-        idx = 0
-        for i in range(length):
-            if arr[idx] < arr[i]:
-                idx = i
-        arr[idx], arr[length - 1] = arr[length - 1], arr[idx]
-        length -= 1
-        print(arr)
-
-
 def foo(*args, **kwargs):
     print(args)
     print(kwargs)
