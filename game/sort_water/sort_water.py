@@ -20,15 +20,21 @@ class COLOR(Enum):
     GRAY = auto()
     MAX = auto()
 
-bottle_amount = 19  # 瓶子总数
-empty_bottle = 2  # 两个空瓶
-
 
 class WaterSortSolver:
-    def __init__(self,  max_capacity=4):
-        self.max_capacity = max_capacity
+    def __init__(self, bottle_amount: int, empty_bottle: int, max_capacity: int = 4):
+        """_summary_
 
-    def _count_colors(self):
+        Args:
+            bottle_amount (int): 瓶子总数
+            empty_bottle (int): 空瓶数
+            max_capacity (int, optional): 瓶子容量 Defaults to 4.
+        """
+        self.max_capacity = max_capacity
+        self.bottle_amount = bottle_amount
+        self.empty_bottle = empty_bottle
+
+    def _count_colors(self) -> dict[int, int]:
         """统计每种颜色的总数"""
         color_count: dict[int, int] = {}
         for bottle in self.initial_state:
@@ -47,19 +53,19 @@ class WaterSortSolver:
             solution = self.solve(max_steps=10000, time_limit=3)
             if not solution:
                 continue
-            
+
             print(json.dumps(puzzle))
 
     def gen_new_puzzle(self) -> list[list[int]]:
         color_blocks: list[int] = []
-        for _ in range(bottle_amount-empty_bottle):
+        for _ in range(self.bottle_amount - self.empty_bottle):
             color = random.randint(COLOR.RED.value, COLOR.MAX.value)
             color_blocks.extend([color for _ in range(self.max_capacity)])
 
         random.shuffle(color_blocks)
-        bottles: list[list[int]] = [[] for _ in range(bottle_amount)]
+        bottles: list[list[int]] = [[] for _ in range(self.bottle_amount)]
         for idx, b in enumerate(bottles):
-            count = self.max_capacity//2 if idx < 2 else self.max_capacity
+            count = self.max_capacity // 2 if idx < 2 else self.max_capacity
             b.extend(color_blocks[:count])
             color_blocks = color_blocks[count:]
 
@@ -124,7 +130,9 @@ class WaterSortSolver:
                 return False
 
         # 4. 不要在两个单色瓶子之间来回倒
-        if self.is_bottle_single_color(from_bottle) and self.is_bottle_single_color(to_bottle):
+        if self.is_bottle_single_color(from_bottle) and self.is_bottle_single_color(
+            to_bottle
+        ):
             if from_bottle[-1] == to_bottle[-1]:
                 # 只有在能完成目标瓶子时才倒
                 from_color, from_count = self.get_top_color_count(from_bottle)
@@ -151,9 +159,11 @@ class WaterSortSolver:
         color = from_bottle[-1]
         count = 0
 
-        while (from_bottle and
-               from_bottle[-1] == color and
-               len(to_bottle) < self.max_capacity):
+        while (
+            from_bottle
+            and from_bottle[-1] == color
+            and len(to_bottle) < self.max_capacity
+        ):
             to_bottle.append(from_bottle.pop())
             count += 1
 
@@ -207,8 +217,7 @@ class WaterSortSolver:
                     h += layers_above
 
         # 未完成的瓶子数
-        incomplete = sum(
-            1 for b in bottles if b and not self.is_bottle_complete(b))
+        incomplete = sum(1 for b in bottles if b and not self.is_bottle_complete(b))
         h += incomplete * 0.5
 
         return h
@@ -258,7 +267,10 @@ class WaterSortSolver:
                 # 中优先级：倒入空瓶
                 if not state[j]:
                     # 但如果源瓶子是单色的且满了，优先级降低
-                    if self.is_bottle_single_color(state[i]) and len(state[i]) == self.max_capacity:
+                    if (
+                        self.is_bottle_single_color(state[i])
+                        and len(state[i]) == self.max_capacity
+                    ):
                         priority += 10
                     else:
                         priority += 150
@@ -366,12 +378,19 @@ class WaterSortSolver:
             self.print_state(state)
 
     def print_state(self, bottles):
-        return
         """打印当前状态"""
         for i, bottle in enumerate(bottles):
             status = " ✓" if self.is_bottle_complete(bottle) else ""
             print(f"瓶子 {i:2d}: {bottle}{status}")
 
 
-solver = WaterSortSolver(8)
+"""
+A*：搜索策略，核心是 f(n) = g(n) + h(n)
+堆队列：高效选择下一个扩展节点
+剪枝策略：减少冗余扩展，提高效率
+
+可以把 A* 看作“带启发式的最短路径搜索”，堆队列是“高效管理节点”，剪枝策略是“聪明地不走冤枉路”。
+"""
+
+solver = WaterSortSolver(19, 2, 8)
 solver.gen_some_valid_puzzle()
