@@ -25,3 +25,17 @@
 
 - NumPy 是一个用于`高效数值计算`的 Python 库，提供`多维数组`对象和丰富的`数学函数`工具
 - Matplotlib 是一个用于创建各种静态、动态和交互式`可视化图表`的 Python 绘图库
+
+
+### 高阶算法
+
+- 深度强化学习（DQN, PPO）,需训练，有长期策略
+- 蒙特卡洛树搜索 (Monte Carlo Tree Search, MCTS)
+- 蒙特卡洛采样 (Flat Monte Carlo Search)
+- 启发式搜索 (Heuristic Search)
+- A* / BFS / DFS
+- 模拟退火 / 遗传算法
+- 动态规划 (DP)
+- 启发式贪心（Heuristic Greedy）
+- 贪心算法 (Greedy)
+- 启发式 + Monte Carlo
