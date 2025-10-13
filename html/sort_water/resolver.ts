@@ -82,7 +82,6 @@ class MinHeap {
 class WaterSortSolver {
   private maxCapacity: number;
   private initialState: State = [];
-  private colorCount: Map<number, number> = new Map();
 
   constructor(maxCapacity: number = CAPACITY) {
     this.maxCapacity = maxCapacity;
@@ -100,7 +99,6 @@ class WaterSortSolver {
 
   changePuzzle(bottles: State): void {
     this.initialState = bottles.map(b => [...b]);
-    this.colorCount = this.countColors();
   }
 
   genNewPuzzle(): State {
@@ -244,8 +242,6 @@ class WaterSortSolver {
   }
 
   private getHeuristic(bottles: State): number {
-    let h = 0;
-
     const colorBottles = new Map<number, number[]>();
     for (let i = 0; i < bottles.length; i++) {
       const uniqueColors = new Set(bottles[i]);
@@ -257,6 +253,7 @@ class WaterSortSolver {
       }
     }
 
+    let h = 0;
     for (const [color, bottleIndices] of colorBottles) {
       h += (bottleIndices.length - 1) * 2;
 
