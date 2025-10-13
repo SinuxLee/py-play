@@ -33,6 +33,7 @@
 - pandas
 - NetworkX 
 - Gym
+- manim 创建数学动画
 
 ## sudoku
 
