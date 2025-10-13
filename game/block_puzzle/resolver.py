@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import random
 from copy import deepcopy
 
@@ -10,10 +11,17 @@ SHAPES: list[np.ndarray] = [
     np.array([[1, 1]]),
     np.array([[1], [1]]),
     np.array([[1, 1, 1]]),
+    np.array([[1], [1], [1]]),
     np.array([[1, 1], [1, 1]]),
-    np.array([[1, 1, 1], [0, 1, 0]]),  # T
-    np.array([[1, 0], [1, 1]]),  # L
-    np.array([[0, 1], [1, 1]]),  # J
+    np.array([[1, 1, 1], [1, 0, 0]]),
+    np.array([[1, 1, 1], [0, 0, 1]]),
+    np.array([[1, 0], [1, 1]]), # L
+    np.array([[0, 1], [1, 1]]), # J
+    np.array([[1, 1], [0, 1]]),
+    np.array([[1, 1, 1, 1]]),
+    np.array([[1], [1], [1], [1]]),
+    np.array([[1, 1, 1], [0, 1, 0]]), # T
+    np.array([[1, 1, 1], [1, 1, 1]])
 ]
 
 
@@ -36,7 +44,7 @@ class Game1010:
     def place(self, shape, r: int, c: int):
         h, w = shape.shape
         self.board[r : r + h, c : c + w] += shape
-        self.clear_lines()
+        return self.clear_lines()
 
     def clear_lines(self):
         """消除的行/列数"""
@@ -82,7 +90,7 @@ class Game1010:
         return count
 
     def heuristic_score(self, cleared):
-        empty = np.sum(self.board == 0) # 剩余空格数
+        empty = np.sum(self.board == 0)  # 剩余空格数
         holes = self.count_holes()
         mobility = self.mobility()
         score = (cleared * 5) + (mobility * 2) - (holes * 3) - (empty * 0.1)
@@ -106,8 +114,7 @@ def evaluate_move(state: Game1010, shape, move: tuple[int, int], samples=3):
     total = 0
     for _ in range(samples):
         sim = deepcopy(state)
-        sim.place(shape, *move)
-        cleared = sim.clear_lines()
+        cleared = sim.place(shape, *move)
         score = sim.heuristic_score(cleared)
         total += score
     return total / samples
@@ -119,16 +126,30 @@ def best_move(state: Game1010, shapes):
     for shape in shapes:
         moves = state.available_moves(shape)
         for move in moves:
-            score = evaluate_move(state, shape, move)
+            score = evaluate_move(state, shape, move, 3)
             if score > best_score:
                 best_score = score
                 best = (shape, move)
     return best, best_score
 
 
+def show_board(board, step, score):
+    plt.imshow(board, cmap="Greens", vmin=0, vmax=1)
+    plt.title(f"Step {step}  |  Score: {score}")
+    plt.xticks(range(BOARD_SIZE))
+    plt.yticks(range(BOARD_SIZE))
+    plt.grid(color="gray", linestyle="--", linewidth=0.5)
+    plt.pause(0.4)  # 控制动画速度
+
+
 # ---------- 主逻辑 ----------
 game = Game1010()
 rounds = 0
+show_ui = False
+
+if show_ui:
+    plt.figure(figsize=(5, 5))
+    plt.ion()  # 开启交互模式
 
 while True:
     shapes = random_shapes(3)
@@ -139,4 +160,10 @@ while True:
     shape, move = best
     game.place(shape, *move)
     rounds += 1
+
     print(f"第 {rounds} 回合：放置形状 {shape.shape} 于 {move}，得分 {game.score}")
+    if show_ui:
+        show_board(game.board, rounds, game.score)
+if show_ui:
+    plt.ioff()
+    plt.show()
