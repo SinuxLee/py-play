@@ -24,6 +24,16 @@
 - tile tk 工具模板
 - canvas 画布基础
 
+## 复杂功能的依赖
+```shell
+  pip3 install numpy matplotlib pygame
+```
+其它常用的库
+- torch
+- pandas
+- NetworkX 
+- Gym
+
 ## sudoku
 
 数独算法
