@@ -2,7 +2,7 @@ import pygame
 import json
 import sys
 import random
-from typing import List, Dict, Tuple, Optional
+from typing import List, Tuple, Optional
 
 # 初始化Pygame
 pygame.init()
