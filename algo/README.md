@@ -29,7 +29,7 @@
 
 ### 高阶算法
 
-- 深度强化学习（DQN, PPO）,需训练，有长期策略
+- 深度强化学习（DQN, PPO）需训练(自我对弈)，有长期策略
 - 蒙特卡洛树搜索 (Monte Carlo Tree Search, MCTS)
 - 蒙特卡洛采样 (Flat Monte Carlo Search)
 - 启发式搜索 (Heuristic Search)
