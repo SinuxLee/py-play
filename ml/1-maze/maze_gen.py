@@ -1,4 +1,12 @@
 import random
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True, eq=True)
+class Point:
+    x: int
+    y: int
+    data: int
 
 
 def simple_maze(n: int, m: int) -> list[list[int]]:

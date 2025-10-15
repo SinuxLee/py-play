@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import namedtuple, deque
 from maze_gen import maze_with_branches, print_maze
 
 Pos = namedtuple("Pos", ["r", "c"])
@@ -10,13 +10,13 @@ def depth_first_search_stack(maze: list[list[int]]) -> list[tuple[int, int]] | N
     max_col = len(maze[0])
     target = (max_row - 1, max_col - 1)
 
-    stack: list[Node] = []  # pending for visting
+    stack: deque[Node] = deque()  # pending for visting
     visted: set[Pos] = set()  # closed set
-    steps = [
-        (-1, 0),
-        (0, 1),
-        (1, 0),
-        (0, -1),
+    directions = [
+        (-1, 0),  # top
+        (0, 1),  # right
+        (1, 0),  # down
+        (0, -1),  # left
     ]  # distance bettwen currnt node and neighbors
 
     start = Pos(0, 0)
@@ -36,7 +36,7 @@ def depth_first_search_stack(maze: list[list[int]]) -> list[tuple[int, int]] | N
         visted.add(pos)
 
         # calc neighbor and push to stack
-        for x, y in [tuple(x + y for x, y in zip(pos, s)) for s in steps]:
+        for x, y in [tuple(x + y for x, y in zip(pos, s)) for s in directions]:
             if y < 0 or y >= max_row or x < 0 or x >= max_col:
                 continue
 
