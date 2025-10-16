@@ -1,27 +1,30 @@
-'''
-    实现难易程度：快速排序原地 > 堆排序 > 归并排序原地 > 希尔排序 > 插入排序 > 选择排序 > 冒泡排序
-    选择算法时需要考虑：
-    1. 数据规模 10^2 10^4 10^5 10^7
-        小数据量：几十到几千个元素
-        中等数据量：几万到几十万元素
-        大数据量：百万到千万级甚至亿级元素
-        亿级及以上考虑外部排序（External Sort），磁盘归并排序
-    2. 空间限制(考虑递归栈空间) O(1)
-    3. 时间复杂度 O(n) O(n^2) O(n log n)
-    4. 元素顺序稳定性
-    5. 方差 最好，最坏，平均情况
-    6. 评估，有序，逆序，局部有序(前中后)，完全乱序，重复数据占比
-    7. 特殊情况：数据为空，一个元素
+"""
+实现难易程度：快速排序原地 > 堆排序 > 归并排序原地 > 希尔排序 > 插入排序 > 选择排序 > 冒泡排序
+选择算法时需要考虑：
+1. 数据规模 10^2 10^4 10^5 10^7
+    小数据量：几十到几千个元素
+    中等数据量：几万到几十万元素
+    大数据量：百万到千万级甚至亿级元素
+    亿级及以上考虑外部排序（External Sort），磁盘归并排序
+2. 空间限制(考虑递归栈空间) O(1)
+3. 时间复杂度 O(n) O(n^2) O(n log n)
+4. 元素顺序稳定性
+5. 方差 最好，最坏，平均情况
+6. 评估，有序，逆序，局部有序(前中后)，完全乱序，重复数据占比
+7. 特殊情况：数据为空，一个元素
 
-    工业/工程实践要求：
-    1. 高效
-    2. 稳定(同样数据得到固定结果)
-    3. 易实现(理解)
-    4. 适应性好(处理不同特征样本，时间/空间最好是相近的)
-'''
+工业/工程实践要求：
+1. 高效
+2. 稳定(同样数据得到固定结果)
+3. 易实现(理解)
+4. 适应性好(处理不同特征样本，时间/空间最好是相近的)
+"""
+
+
 # -------- 稳定的排序 --------
 def bubble_sort(arr: list[int]) -> None:
-    """冒泡排序
+    """
+    冒泡排序
         每趟比较相邻的两个数
     Args:
         arr (list[int]): 待排序数据
@@ -35,7 +38,8 @@ def bubble_sort(arr: list[int]) -> None:
 
 
 def insert_sort(arr: list[int]) -> None:
-    """插入排序
+    """
+    插入排序
         默认第一个元素是有序的，从第二个开始依次插入到有序部分
         适合小规模数据(几十个) / 基本有序的数据
     Args:
@@ -66,6 +70,7 @@ def insert_sort(arr: list[int]) -> None:
 # 图书馆排序
 # 块排序
 
+
 # Tim排序, V8、Java、 Python 中的实现
 # 基于归并排序 + 插入排序
 def insertion_sort(arr, left, right):
@@ -77,9 +82,10 @@ def insertion_sort(arr, left, right):
             j -= 1
         arr[j + 1] = key
 
+
 def merge(arr, left, mid, right):
-    left_part = arr[left:mid + 1]
-    right_part = arr[mid + 1:right + 1]
+    left_part = arr[left : mid + 1]
+    right_part = arr[mid + 1 : right + 1]
 
     i = j = 0
     k = left
@@ -102,6 +108,7 @@ def merge(arr, left, mid, right):
         j += 1
         k += 1
 
+
 # TimSort
 def timsort(arr):
     size = 32
@@ -121,10 +128,10 @@ def timsort(arr):
         size *= 2
 
 
-
 # -------- 不稳定的排序 --------
 def select_sort(arr: list[int]) -> None:
-    """选择排序
+    """
+    选择排序
         每趟选择一个较大的数与其它数比较
     Args:
         arr (list[int]): 待排序数据
@@ -143,7 +150,8 @@ def select_sort(arr: list[int]) -> None:
 
 # 希尔排序，插入排序的改进版
 def shell_sort(arr: list[int]) -> None:
-    """希尔排序
+    """
+    希尔排序
         中等规模数据排序(几百~几千条)
         不同 gap 序列会影响性能：
             Shell 原始序列(n/2,n/4,...)
@@ -175,10 +183,11 @@ def shell_sort(arr: list[int]) -> None:
 # 梳排序
 # 平滑排序
 
+
 def heapify(arr, n, i):
-    largest = i       # 当前节点
+    largest = i  # 当前节点
     left = 2 * i + 1  # 左子节点
-    right = 2 * i + 2 # 右子节点
+    right = 2 * i + 2  # 右子节点
 
     # 找到最大值
     if left < n and arr[left] > arr[largest]:
@@ -191,8 +200,10 @@ def heapify(arr, n, i):
         arr[i], arr[largest] = arr[largest], arr[i]
         heapify(arr, n, largest)
 
+
 def heap_sort(arr: list[int]) -> None:
-    """堆排序
+    """
+    堆排序
         本质是利用部分有序集合的传递性完成比较，比如 a>b 且 b>c 则 a>c 从而减少比较/交换次数
         适合大数据量，百万~千万级
         没有额外空间开销
@@ -209,10 +220,12 @@ def heap_sort(arr: list[int]) -> None:
     # 逐步交换堆顶到末尾，然后重新调整堆
     for i in range(n - 1, 0, -1):
         arr[0], arr[i] = arr[i], arr[0]  # 交换
-        heapify(arr, i, 0)               # 调整堆
+        heapify(arr, i, 0)  # 调整堆
+
 
 def quick_sort(arr: list[int], low: int, high: int) -> None:
-    """快速排序
+    """
+    快速排序
         用最左侧元素将 list 划分成两部分(分治策略)，将小于它的放左侧，否则放右侧
         时间复杂度方差较大
     Args:
