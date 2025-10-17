@@ -1,5 +1,12 @@
 # Python Playground
 
+## 训练重点
+
+- 问题建模 + 算法选择 + 数据结构映射
+  拿现实问题 → 写约束 → 定义目标 → 调用库 → 分析结果
+- 不需要手写算法，工业界有很多库可以调用
+  能把业务问题转化为算法模型，并稳定高效落地
+
 ## algo
 
 算法相关
@@ -55,6 +62,9 @@
 - https://www.bilibili.com/video/BV1SecRewEhd?spm_id_from=333.788.videopod.episodes&vd_source=c0bff2f48f2b7c883ffe45d2f4c8a7a9&p=3
 - https://www.hello-algo.com/chapter_hello_algo/
 - https://pycoders-weekly-chinese.readthedocs.io/en/latest/issue6/a-guide-to-pythons-magic-methods.html
+
+## 挑战
+- https://www.kaggle.com/
 
 ## 调试工具
 

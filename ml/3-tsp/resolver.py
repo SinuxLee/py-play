@@ -18,7 +18,7 @@ RND_SEED = 42
 random.seed(RND_SEED)
 
 # 生成 20 个城市
-N = 20
+N = 40
 postions: list[tuple[float, float]] = [
     (random.uniform(0, 100), random.uniform(0, 100)) for _ in range(N)
 ]
@@ -58,8 +58,7 @@ def two_opt_swap(route, i, k):
     """
     随机一个切片，翻转切片后重新组成一个整体
     """
-    new_route = route[:i] + route[i : k + 1][::-1] + route[k + 1 :]
-    return new_route
+    return route[:i] + route[i : k + 1][::-1] + route[k + 1 :]
 
 
 def simulated_annealing(initial_route, max_iter=20000, T0=100.0, alpha=0.9995):
@@ -77,6 +76,7 @@ def simulated_annealing(initial_route, max_iter=20000, T0=100.0, alpha=0.9995):
     best_len = path_length(best)
     current_len = best_len
     T = T0
+
     for _ in range(max_iter):
         # 随机选择两个位置进行 2-opt
         i = random.randint(0, N - 2)
@@ -210,58 +210,213 @@ def genetic_algorithm(pop_size=100, generations=500, elite_size=2, mutation_rate
 
 
 # ------------------------------------------------------
-# 运行两种算法并测时，都属于元启发式算法（Metaheuristics）
-# 优化方向：混合优化算法（Hybrid Algorithm）
-# 用 GA 快速找到“较优解群体”，然后用 SA 对每个个体或最优个体进行局部优化
+# 蚁群算法（Ant Colony Optimization, ACO）
 # ------------------------------------------------------
+def ant_colony_optimization(
+    num_ants=40, generations=200, alpha=1.0, beta=5.0, rho=0.5, Q=100
+):
+    # 初始化信息素矩阵
+    pheromone = [[1.0 for _ in range(N)] for _ in range(N)]
+    best_route, best_len = None, float("inf")
+
+    for _ in range(generations):
+        all_routes = []
+        all_lengths = []
+
+        for idx in range(num_ants):
+            unvisited = list(range(N))
+            route = [idx % N]  # 每只蚂蚁起点不同
+            unvisited.remove(route[0])
+            # route = [unvisited.pop(random.randint(0, len(unvisited) - 1))] # 随机起点
+
+            # 模拟走完所有城市
+            while unvisited:
+                i = route[-1]  # 上一城市
+                probs = []
+                for j in unvisited:
+                    tau = pheromone[i][j] ** alpha
+                    eta = (1.0 / dist[i][j]) ** beta
+                    probs.append(tau * eta)
+                total = sum(probs)
+                probs = [p / total for p in probs]
+
+                # 轮盘赌选择
+                r = random.random()
+                cum = 0
+                for idx, p in enumerate(probs):
+                    cum += p
+                    if r <= cum:
+                        next_city = unvisited.pop(idx)
+                        break
+                route.append(next_city)
+
+            L = path_length(route)
+            all_routes.append(route)
+            all_lengths.append(L)
+            if L < best_len:
+                best_route, best_len = route[:], L
+
+        # 信息素挥发与更新
+        for i in range(N):
+            for j in range(N):
+                pheromone[i][j] *= 1 - rho
+
+        for route, L in zip(all_routes, all_lengths):
+            for i in range(N):
+                a, b = route[i], route[(i + 1) % N]
+                pheromone[a][b] += Q / L
+                pheromone[b][a] += Q / L
+
+    return best_route, best_len
+
+
+# ------------------------------------------------------
+# 混合算法
+# ------------------------------------------------------
+def aco_with_sa_local_search(
+    num_ants=40,  # 蚂蚁数量
+    generations=200,  # 模拟多少代
+    alpha=1.0,  # 对信息素的依赖度，为 0 表示随机选择
+    beta=5.0,  # 对启发函数的依赖度，为 0 则不考虑成本(距离)
+    rho=0.5,  # 信息素挥发系数, 越大挥发越快
+    Q=100,  # 信息素常数
+    sa_prob=0.3,  # 启用退火优化概率
+    sa_iter=500,  # 退火迭代次数
+):
+    """
+    混合算法：蚁群算法 + 模拟退火局部优化
+    sa_prob: 每代对部分最优蚂蚁使用局部优化的概率
+    """
+    pheromone = [
+        [1.0 for _ in range(N)] for _ in range(N)
+    ]  # 信息素，蚂蚁跟踪路径的依据
+    best_route, best_len = None, float("inf")
+
+    for _ in range(generations):
+        all_routes, all_lengths = [], []
+
+        for _ in range(num_ants):
+            unvisited = list(range(N))
+            route = [unvisited.pop(random.randint(0, N - 1))]
+
+            while unvisited:
+                i = route[-1]
+                probs = []
+
+                # 计算下一站的概率
+                for j in unvisited:
+                    tau = pheromone[i][j] ** alpha  # 查看信息素
+                    eta = (1.0 / dist[i][j]) ** beta  # 距离越远此数越小
+                    probs.append(tau * eta)
+                total = sum(probs)
+                probs = [p / total for p in probs]
+
+                # 轮盘赌选择, 按权重随机选
+                r, cum = random.random(), 0
+                for idx, p in enumerate(probs):
+                    cum += p
+                    if r <= cum:
+                        next_city = unvisited.pop(idx)
+                        break
+                route.append(next_city)
+
+            L = path_length(route)
+
+            # 对部分优质个体进行局部优化（模拟退火）
+            if random.random() < sa_prob:
+                route_sa, L_sa = simulated_annealing(
+                    route, max_iter=sa_iter, T0=50.0, alpha=0.995
+                )
+                if L_sa < L:
+                    route, L = route_sa, L_sa
+
+            all_routes.append(route)
+            all_lengths.append(L)
+            if L < best_len:
+                best_len, best_route = L, route[:]
+
+        # 信息素衰减
+        for i in range(N):
+            for j in range(N):
+                pheromone[i][j] *= 1 - rho
+
+        # 在刚走过的路上添加信息素
+        for route, L in zip(all_routes, all_lengths):
+            for i in range(N):
+                a, b = route[i], route[(i + 1) % N]
+                pheromone[a][b] += Q / L
+                pheromone[b][a] += Q / L
+
+    return best_route, best_len
+
+
+# ======================================================
+# 运行三种算法并比较
+# ======================================================
 initial_route = list(range(N))
 random.shuffle(initial_route)
 
 # Simulated Annealing
 start = time.time()
 sa_route, sa_len = simulated_annealing(
-    initial_route, max_iter=30000, T0=100.0, alpha=0.9996
+    initial_route, max_iter=40000, T0=100.0, alpha=0.9998
 )
 sa_time = time.time() - start
 
 # Genetic Algorithm
 start = time.time()
 ga_route, ga_len = genetic_algorithm(
-    pop_size=120, generations=100, elite_size=4, mutation_rate=0.08
+    pop_size=120, generations=200, elite_size=4, mutation_rate=0.08
 )
 ga_time = time.time() - start
 
-# 输出结果
+start = time.time()
+aco_route, aco_len = ant_colony_optimization(num_ants=100, generations=200)
+aco_time = time.time() - start
+
+# mixed algo
+start = time.time()
+aco_sa_route, aco_sa_len = aco_with_sa_local_search(num_ants=40, generations=200)
+aco_sa_time = time.time() - start
+
+
 print("城市数量:", N)
-print("模拟退火 (SA) 最短环路长度: {:.4f}, 时间: {:.2f}s".format(sa_len, sa_time))
-print("遗传算法 (GA) 最短环路长度: {:.4f}, 时间: {:.2f}s".format(ga_len, ga_time))
+print(f"模拟退火 (SA): {sa_len:.4f}, 用时 {sa_time:.2f}s")
+print(f"遗传算法 (GA): {ga_len:.4f}, 用时 {ga_time:.2f}s")
+print(f"蚁群算法 (ACO): {aco_len:.4f}, 用时 {aco_time:.2f}s")
+print(f"混合算法 (ACO+SA): {aco_sa_len:.4f}, 用时 {aco_sa_time:.2f}s")
 
 
-# 按路径顺序取得坐标，便于绘图
+# ------------------------------------------------------
+# 运行三种算法并测时，都属于元启发式算法（Metaheuristics）
+# 优化方向：混合优化算法（Hybrid Algorithm）
+# 用 GA 快速找到“较优解群体”，然后用 SA 对每个个体或最优个体进行局部优化
+# ------------------------------------------------------
 def coords_from_route(route):
     xs = [cities[i][1] for i in route] + [cities[route[0]][1]]
     ys = [cities[i][2] for i in route] + [cities[route[0]][2]]
     return xs, ys
 
 
-sa_xs, sa_ys = coords_from_route(sa_route)
-ga_xs, ga_ys = coords_from_route(ga_route)
+show_ui = False
+if show_ui:
+    plt.figure(figsize=(16, 5))
 
-# 绘图对比：两个子图
-plt.figure(figsize=(12, 5))
+    for i, (route, name, L) in enumerate(
+        [
+            (sa_route, "Simulated Annealing", sa_len),
+            (ga_route, "Genetic Algorithm", ga_len),
+            (aco_route, "Ant Colony Optimization", aco_len),
+            (aco_sa_route, "Aco With SA Local Search", aco_sa_len),
+        ]
+    ):
+        xs, ys = coords_from_route(route)
+        plt.subplot(1, 4, i + 1)
+        plt.plot(xs, ys, marker="o")
+        for j, idx in enumerate(route):
+            plt.text(cities[idx][1], cities[idx][2], str(idx))
+        plt.title(f"{name}\nLength: {L:.2f}")
 
-plt.subplot(1, 2, 1)
-plt.plot(sa_xs, sa_ys, marker="o")
-for i, idx in enumerate(sa_route):
-    plt.text(cities[idx][1], cities[idx][2], str(idx))
-plt.title("Simulated Annealing\nLength: {:.4f}".format(sa_len))
-
-plt.subplot(1, 2, 2)
-plt.plot(ga_xs, ga_ys, marker="o")
-for i, idx in enumerate(ga_route):
-    plt.text(cities[idx][1], cities[idx][2], str(idx))
-plt.title("Genetic Algorithm\nLength: {:.4f}".format(ga_len))
-
-plt.suptitle("TSP: SA vs GA ({} cities)".format(N))
-plt.tight_layout(rect=[0, 0.03, 1, 0.95])
-plt.show()
+    plt.suptitle(f"TSP Comparison: SA vs GA vs ACO vs Mixed ({N} cities)")
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.show()
