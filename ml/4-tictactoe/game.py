@@ -52,7 +52,7 @@ def minimax(board, depth, is_maximizing, alpha, beta):
                 board[i] = "O"
                 eval = minimax(board, depth + 1, False, alpha, beta)
                 board[i] = ""
-                
+                # 选一个最优的，则为我最少得分着法
                 max_eval = max(max_eval, eval)
                 alpha = max(alpha, eval)
                 if alpha >= beta:
@@ -64,13 +64,15 @@ def minimax(board, depth, is_maximizing, alpha, beta):
             if board[i] == "":
                 board[i] = "X"
 
-                # 下一层该AI了，所以求最大值
+                # 对手最多让我得分
                 eval = minimax(board, depth + 1, True, alpha, beta)
                 board[i] = ""
 
-                # 计算对手
+                # 取最小的，即对手给我的最多得分
                 min_eval = min(min_eval, eval)
                 beta = min(beta, eval)
+
+                # 我已找到最少等分路径
                 if alpha >= beta:
                     break
         return min_eval

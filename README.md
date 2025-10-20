@@ -33,7 +33,7 @@
 
 ## 复杂功能的依赖
 ```shell
-  pip3 install numpy matplotlib pygame
+  pip3 install numpy matplotlib pygame pandas
 ```
 其它常用的库
 - torch
@@ -65,6 +65,7 @@
 
 ## 挑战
 - https://www.kaggle.com/
+- 游戏挑战 https://20_games_challenge.gitlab.io/games/
 
 ## 调试工具
 
