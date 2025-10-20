@@ -66,6 +66,7 @@
 ## 挑战
 - https://www.kaggle.com/
 - 游戏挑战 https://20_games_challenge.gitlab.io/games/
+- https://www.heywhale.com/
 
 ## 调试工具
 
