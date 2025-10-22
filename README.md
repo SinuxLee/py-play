@@ -41,6 +41,7 @@
 - NetworkX 
 - Gym
 - manim 创建数学动画
+- scikit-learn
 
 ## sudoku
 
@@ -59,6 +60,8 @@
 - 算法练习 TOP 100 https://leetcode.cn/studyplan/
 - 数学 https://zh.khanacademy.org/math
 - 人工智能 https://www.datawhale.cn/home
+- 仿真模拟 https://phet.colorado.edu/zh_CN/simulations/filter?type=html
+- https://python3-cookbook.readthedocs.io/zh-cn/latest/
 - https://www.bilibili.com/video/BV1SecRewEhd?spm_id_from=333.788.videopod.episodes&vd_source=c0bff2f48f2b7c883ffe45d2f4c8a7a9&p=3
 - https://www.hello-algo.com/chapter_hello_algo/
 - https://pycoders-weekly-chinese.readthedocs.io/en/latest/issue6/a-guide-to-pythons-magic-methods.html
