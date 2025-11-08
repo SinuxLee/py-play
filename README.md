@@ -54,6 +54,8 @@
 
 - test_demo 测试 demo 的功能
 
+## 数据集
+- https://archive.ics.uci.edu/datasets
 
 ## 教程
 - 动画演示 https://visualgo.net/zh
@@ -65,6 +67,9 @@
 - https://www.bilibili.com/video/BV1SecRewEhd?spm_id_from=333.788.videopod.episodes&vd_source=c0bff2f48f2b7c883ffe45d2f4c8a7a9&p=3
 - https://www.hello-algo.com/chapter_hello_algo/
 - https://pycoders-weekly-chinese.readthedocs.io/en/latest/issue6/a-guide-to-pythons-magic-methods.html
+
+## 书籍
+- 丛书 https://book.douban.com/series/1163
 
 ## 挑战
 - https://www.kaggle.com/
