@@ -1,6 +1,6 @@
 from array import array
 
-'''
+"""
 'b'	signed char	int	1字节有符号整型
 'B'	unsigned char	int	1字节无符号整型
 'h'	signed short	int	2字节有符号整型
@@ -13,8 +13,9 @@ from array import array
 'Q'	unsigned long long	int	8 字节
 'f'	float	float	4 字节
 'd'	double	float	8 字节
-'''
+"""
 
-arr = array('i')
-arr.append(1)
-print(len(arr))
+arr = array("i")
+for i in range(10):
+    arr.append(i)
+print(arr, arr[1])
